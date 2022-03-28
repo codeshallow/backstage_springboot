@@ -1,10 +1,7 @@
 package com.qianyu.springboot.mapper;
 
 import com.qianyu.springboot.entity.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -24,4 +21,7 @@ public interface UserMapper {
     int insert(User user);
 
     int update(User user);
+
+    @Delete("delete from sys_user where id = #{id}")
+    Integer deleteById(@Param("id") Integer id);
 }
