@@ -13,6 +13,7 @@ public class BackstageSpringbootApplication {
         SpringApplication.run(BackstageSpringbootApplication.class, args);
     }
 
+    //测试
     @GetMapping("/")
     public String index() {
         return "ojbk";
