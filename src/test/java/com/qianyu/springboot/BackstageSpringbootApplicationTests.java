@@ -1,4 +1,4 @@
-package com.qianyu.backstage_springboot;
+package com.qianyu.springboot;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
