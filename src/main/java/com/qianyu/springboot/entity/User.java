@@ -1,36 +1,58 @@
 package com.qianyu.springboot.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * @author qianyu
- * @title
- * @Package com.qianyu.springboot.entity
- * @date 2022/3/28 16:06
+ * <p>
+ * 
+ * </p>
+ *
+ * @author 浅羽
+ * @since 2022-03-29
  */
-@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
-@TableName(value = "sys_user")
-public class User {
+@Getter
+@Setter
+  @TableName("sys_user")
+@ApiModel(value = "User对象", description = "")
+public class User implements Serializable {
 
-    //mp已自动转换成驼峰
+    private static final long serialVersionUID = 1L;
 
-    @TableId(type = IdType.AUTO)
-    private Integer id;
-    private String username;
-    @JsonIgnore //忽略某个字段，不展示给前端
-    private String password;
-    private String nickname;
-    private String email;
-    private String phone;
-    private String address;
-    @TableField(value = "avatar_url")   //指定数据库的字段
-    private String avatar;
+      @ApiModelProperty("id")
+        @TableId(value = "id", type = IdType.AUTO)
+      private Integer id;
+
+      @ApiModelProperty("用户名")
+      private String username;
+
+      @ApiModelProperty("密码")
+      private String password;
+
+      @ApiModelProperty("昵称")
+      private String nickname;
+
+      @ApiModelProperty("邮箱")
+      private String email;
+
+      @ApiModelProperty("电话")
+      private String phone;
+
+      @ApiModelProperty("地址")
+      private String address;
+
+      @ApiModelProperty("创建时间")
+      private LocalDateTime createTime;
+
+      @ApiModelProperty("头像")
+      private String avatarUrl;
+
 
 }
