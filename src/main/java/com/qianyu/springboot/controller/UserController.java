@@ -1,5 +1,8 @@
 package com.qianyu.springboot.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.qianyu.springboot.entity.User;
 import com.qianyu.springboot.mapper.UserMapper;
 import com.qianyu.springboot.service.UserService;
@@ -19,8 +22,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    private UserMapper userMapper;
+    //@Autowired
+    //private UserMapper userMapper;
 
     @Autowired
     private UserService userService;
@@ -31,9 +34,9 @@ public class UserController {
      * @return
      */
     @PostMapping()
-    public Integer save(@RequestBody User user){
+    public Boolean save(@RequestBody User user){
         //新增或者更新
-        return userService.save(user);
+        return userService.saveUser(user);
 
     }
 
@@ -43,8 +46,7 @@ public class UserController {
      */
     @GetMapping()
     public List<User> findAll() {
-        List<User> all = userMapper.findAll();
-        return all;
+        return userService.list();
     }
 
     /**
@@ -53,8 +55,8 @@ public class UserController {
      * @return
      */
     @DeleteMapping("/{id}")
-    public Integer delete(@PathVariable Integer id) {//@PathVariable指{id}和id一一对应
-        return userMapper.deleteById(id);
+    public Boolean delete(@PathVariable Integer id) {//@PathVariable指{id}和id一一对应
+        return userService.removeById(id);
     }
 
     /**
@@ -67,18 +69,50 @@ public class UserController {
      * @param pageSize
      * @return
      */
-    @GetMapping("/page")    //借口路径：/user/page
-    public Map<String,Object> findPage(@RequestParam Integer pageNum,
-                                       @RequestParam Integer pageSize,
-                                       @RequestParam String username) {
+    //@GetMapping("/page")    //借口路径：/user/page
+    //public Map<String,Object> findPage(@RequestParam Integer pageNum,
+    //                                   @RequestParam Integer pageSize,
+    //                                   @RequestParam String username) {
+    //
+    //    pageNum = (pageNum - 1) * pageSize;
+    //    username = "%" + username + "%";
+    //    List<User> data = userMapper.selectPage(pageNum, pageSize,username);
+    //    Integer total = userMapper.selectTotal(username);
+    //    Map<String, Object> res = new HashMap<>();
+    //    res.put("data",data);
+    //    res.put("total",total);
+    //    return res;
+    //}
 
-        pageNum = (pageNum - 1) * pageSize;
-        username = "%" + username + "%";
-        List<User> data = userMapper.selectPage(pageNum, pageSize,username);
-        Integer total = userMapper.selectTotal(username);
-        Map<String, Object> res = new HashMap<>();
-        res.put("data",data);
-        res.put("total",total);
-        return res;
+    /**
+     * mybatis-plus实现分页查询
+     * @param pageNum
+     * @param pageSize
+     * @param username
+     * @return
+     */
+    @GetMapping("/page")
+    public IPage<User> findPage(@RequestParam Integer pageNum,
+                                @RequestParam Integer pageSize,
+                                @RequestParam(defaultValue = "") String username,
+                                @RequestParam(defaultValue = "") String nickname,
+                                @RequestParam(defaultValue = "") String address){
+        IPage<User> page = new Page<>(pageNum,pageSize);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+
+        //条件少有or，不然前面条件失效，尽量用and
+        if (!"".equals(username)) {
+            queryWrapper.like("username",username);
+
+        }
+        if (!"".equals(nickname)) {
+            queryWrapper.like("nickname",nickname);
+
+        }
+        if (!"".equals(address)) {
+            queryWrapper.like("address",address);
+
+        }
+        return userService.page(page,queryWrapper);
     }
 }
