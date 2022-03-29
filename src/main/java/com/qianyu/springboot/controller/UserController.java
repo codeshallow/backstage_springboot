@@ -59,6 +59,11 @@ public class UserController {
         return userService.removeById(id);
     }
 
+    @DeleteMapping("/batch/{id}")
+    public Boolean deleteBatch(@RequestBody List<Integer> ids) {//@PathVariable指{id}和id一一对应
+        return userService.removeByIds(ids);
+    }
+
     /**
      * 分页查询
      * @RequestParam 接收 ?pageNum=1&pigeSize=10 将前端路径值映射过来
@@ -95,7 +100,7 @@ public class UserController {
     public IPage<User> findPage(@RequestParam Integer pageNum,
                                 @RequestParam Integer pageSize,
                                 @RequestParam(defaultValue = "") String username,
-                                @RequestParam(defaultValue = "") String nickname,
+                                @RequestParam(defaultValue = "") String email,
                                 @RequestParam(defaultValue = "") String address){
         IPage<User> page = new Page<>(pageNum,pageSize);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -105,14 +110,16 @@ public class UserController {
             queryWrapper.like("username",username);
 
         }
-        if (!"".equals(nickname)) {
-            queryWrapper.like("nickname",nickname);
+        if (!"".equals(email)) {
+            queryWrapper.like("email",email);
 
         }
         if (!"".equals(address)) {
             queryWrapper.like("address",address);
 
         }
+
+        queryWrapper.orderByDesc("id");
         return userService.page(page,queryWrapper);
     }
 }
