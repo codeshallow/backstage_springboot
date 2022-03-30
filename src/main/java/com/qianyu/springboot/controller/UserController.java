@@ -2,10 +2,12 @@ package com.qianyu.springboot.controller;
 
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.qianyu.springboot.controller.dto.UserDto;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -39,6 +41,16 @@ public class UserController {
 
     @Resource
     private IUserService userService;
+
+    @PostMapping("/login")
+    public boolean login(@RequestBody UserDto userDto) {
+        String username = userDto.getUsername();
+        String password = userDto.getPassword();
+        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)){
+            return false;
+        }
+        return userService.login(userDto);
+    }
 
     // 新增或者更新
     @PostMapping
