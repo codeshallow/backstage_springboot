@@ -7,6 +7,8 @@ import cn.hutool.poi.excel.ExcelReader;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.qianyu.springboot.common.Constants;
+import com.qianyu.springboot.common.Result;
 import com.qianyu.springboot.controller.dto.UserDto;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,13 +45,14 @@ public class UserController {
     private IUserService userService;
 
     @PostMapping("/login")
-    public boolean login(@RequestBody UserDto userDto) {
+    public Result login(@RequestBody UserDto userDto) {
         String username = userDto.getUsername();
         String password = userDto.getPassword();
-        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)){
-            return false;
+        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
+            return Result.error(Constants.CODE_400, "参数错误");
         }
-        return userService.login(userDto);
+        UserDto dto = userService.login(userDto);
+        return Result.success(dto);
     }
 
     // 新增或者更新
@@ -80,9 +83,22 @@ public class UserController {
 
     @GetMapping("/page")
     public Page<User> findPage(@RequestParam Integer pageNum,
-                               @RequestParam Integer pageSize) {
+                               @RequestParam Integer pageSize,
+                               @RequestParam(defaultValue = "") String username,
+                               @RequestParam(defaultValue = "") String email,
+                               @RequestParam(defaultValue = "") String address) {
+
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("id");
+        if (!"".equals(username)) {
+            queryWrapper.like("username", username);
+        }
+        if (!"".equals(email)) {
+            queryWrapper.like("email", email);
+        }
+        if (!"".equals(address)) {
+            queryWrapper.like("address", address);
+        }
         return userService.page(new Page<>(pageNum, pageSize), queryWrapper);
     }
 
