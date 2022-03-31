@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.qianyu.springboot.common.Constants;
 import com.qianyu.springboot.common.Result;
 import com.qianyu.springboot.controller.dto.UserDTO;
+import com.qianyu.springboot.utils.TokenUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -125,6 +126,10 @@ public class UserController {
         if (!"".equals(address)) {
             queryWrapper.like("address", address);
         }
+
+        //获取当前用户信息
+        User currentUser = TokenUtils.getCurrentUser();
+        System.out.println("获取当前用信息================================" + currentUser.getNickname());
         return Result.success(userService.page(new Page<>(pageNum, pageSize), queryWrapper));
     }
 
