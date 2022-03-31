@@ -1,6 +1,6 @@
 package com.qianyu.springboot.service;
 
-import com.qianyu.springboot.controller.dto.UserDto;
+import com.qianyu.springboot.controller.dto.UserDTO;
 import com.qianyu.springboot.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,5 +14,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUserService extends IService<User> {
 
-    UserDto login(UserDto userDto);
+    UserDTO login(UserDTO userDTO);
+
+    User register(UserDTO userDTO);
 }

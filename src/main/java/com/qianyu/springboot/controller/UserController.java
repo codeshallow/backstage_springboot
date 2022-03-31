@@ -9,14 +9,12 @@ import cn.hutool.poi.excel.ExcelWriter;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.qianyu.springboot.common.Constants;
 import com.qianyu.springboot.common.Result;
-import com.qianyu.springboot.controller.dto.UserDto;
+import com.qianyu.springboot.controller.dto.UserDTO;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.util.List;
@@ -44,45 +42,73 @@ public class UserController {
     @Resource
     private IUserService userService;
 
+    /**
+     * 用户登录
+     * @param userDTO
+     * @return
+     */
     @PostMapping("/login")
-    public Result login(@RequestBody UserDto userDto) {
-        String username = userDto.getUsername();
-        String password = userDto.getPassword();
+    public Result login(@RequestBody UserDTO userDTO) {
+        String username = userDTO.getUsername();
+        String password = userDTO.getPassword();
         if (StrUtil.isBlank(username) || StrUtil.isBlank(password)) {
             return Result.error(Constants.CODE_400, "参数错误");
         }
-        UserDto dto = userService.login(userDto);
+        UserDTO dto = userService.login(userDTO);
         return Result.success(dto);
+    }
+
+    /**
+     * 用户注册
+     * @param userDTO
+     * @return
+     */
+    @PostMapping("/register")
+    public Result register(@RequestBody UserDTO userDTO) {
+        String username = userDTO.getUsername();
+        String password = userDTO.getPassword();
+        if (StrUtil.isBlank(username) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400, "参数错误");
+
+        }
+        return Result.success(userService.register(userDTO));
     }
 
     // 新增或者更新
     @PostMapping
-    public boolean save(@RequestBody User user) {
-        return userService.saveOrUpdate(user);
+    public Result save(@RequestBody User user) {
+        return Result.success(userService.saveOrUpdate(user));
     }
 
     @DeleteMapping("/{id}")
-    public Boolean delete(@PathVariable Integer id) {
-        return userService.removeById(id);
+    public Result delete(@PathVariable Integer id) {
+        return Result.success(userService.removeById(id));
     }
 
     @PostMapping("/del/batch")
-    public boolean deleteBatch(@RequestBody List<Integer> ids) {
-        return userService.removeByIds(ids);
+    public Result deleteBatch(@RequestBody List<Integer> ids) {
+        return Result.success(userService.removeByIds(ids));
     }
 
     @GetMapping
-    public List<User> findAll() {
-        return userService.list();
+    public Result findAll() {
+        return Result.success(userService.list());
     }
 
     @GetMapping("/{id}")
-    public User findOne(@PathVariable Integer id) {
-        return userService.getById(id);
+    public Result findOne(@PathVariable Integer id) {
+        return Result.success(userService.getById(id));
+    }
+
+    @GetMapping("/username/{username}")
+    public Result findOne(@PathVariable String username) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", username);
+        return Result.success(userService.getOne(queryWrapper));
     }
 
     @GetMapping("/page")
-    public Page<User> findPage(@RequestParam Integer pageNum,
+    public Result findPage(@RequestParam Integer pageNum,
                                @RequestParam Integer pageSize,
                                @RequestParam(defaultValue = "") String username,
                                @RequestParam(defaultValue = "") String email,
@@ -99,7 +125,7 @@ public class UserController {
         if (!"".equals(address)) {
             queryWrapper.like("address", address);
         }
-        return userService.page(new Page<>(pageNum, pageSize), queryWrapper);
+        return Result.success(userService.page(new Page<>(pageNum, pageSize), queryWrapper));
     }
 
 
@@ -151,7 +177,7 @@ public class UserController {
      * @throws Exception
      */
     @PostMapping("/import")
-    public Boolean imp(MultipartFile file) throws Exception {
+    public Result imp(MultipartFile file) throws Exception {
         InputStream inputStream = file.getInputStream();
         ExcelReader reader = ExcelUtil.getReader(inputStream);
         // 方式1：(推荐) 通过 javabean的方式读取Excel内的对象，但是要求表头必须是英文，跟javabean的属性要对应起来
@@ -173,7 +199,7 @@ public class UserController {
         }
 
         userService.saveBatch(users);
-        return true;
+        return Result.success(true);
 
     }
 
