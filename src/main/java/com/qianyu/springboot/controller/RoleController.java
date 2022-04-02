@@ -60,9 +60,12 @@ public class RoleController {
     }
 
     @GetMapping("/page")
-    public Result findPage(@RequestParam Integer pageNum,
+    public Result findPage(@RequestParam String name,
+                           @RequestParam Integer pageNum,
                            @RequestParam Integer pageSize) {
         QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("name",name);
+
         queryWrapper.orderByDesc("id");
         return Result.success(roleService.page(new Page<>(pageNum, pageSize), queryWrapper));
     }
